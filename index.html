@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Simulator - M2 İstanbul</title>
+    <script type="application/javascript" src="../../c3dl/c3dapi.js" ></script>
+    <script type="application/javascript" src="main.js"></script>
+	<meta name="mobile-web-app-capable" content="yes"/>
+	<meta name="apple-mobile-web-app-capable" content="yes"/>
+	<link rel="apple-touch-startup-image" href="/favicon.png">
+	<link rel="apple-touch-icon" href="favicon.png" />
+	<link rel="apple-touch-icon" sizes="76x76" href="touch-icon-ipad.png"/>
+	<link rel="apple-touch-icon" sizes="120x120" href="touch-icon-iphone-retina.png"/>
+	<link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png"/>
+	<link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+		html {
+			overflow: hidden;
+		}
+        body {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+        }
+        canvas {
+            width: fill-available;
+            height: fill-available;
+            max-height: 100vh;
+            max-width: 100vw;
+        }
+        .buttonsmaincontainer {
+            background: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: left;
+        }
+        .slidercontainer {
+            position: relative;
+        }
+        .slider {
+            position: absolute;
+            left: 0;
+            transform: rotate(270deg);
+            -moz-transform: rotate(270deg);
+            width: 100vh;
+            margin-top: calc(100vh / 2 - 50px);
+            margin-left: calc(-50vh + 50px);
+            height: 100px;
+            outline: none;
+            -webkit-appearance: none;
+            background-color: black;
+            opacity: 0.77;
+			border-radius: 0;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: calc(100vh/13);
+            height: 100px;
+            background: rgb(22, 73, 105);
+            cursor: pointer;
+			border: none;
+        }
+        .slider::-moz-range-thumb {
+            width: calc(100vh/13);
+            height: 100px;
+            background: rgb(22, 73, 105);
+            cursor: pointer;
+			border: none;
+        }
+        .sliderlabels {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: none;
+            pointer-events: none;
+        }
+        .sliderlabels p {
+            height: calc(100vh/13);
+            width: 100px;
+            color: white;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            pointer-events: none;
+        }
+        .speedocontainer {
+            position: absolute;
+            right: 0;
+            left: 100px;
+            bottom: 0;
+            background-color: #000000c4;
+            font-size: 30px;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0 10px 0;
+        }
+        .speedocontainer p {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            padding: 10px 20px 10px 20px;
+            color: white;
+            font-size: 30px;
+        }
+        .speedocontainer div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-left: 0.5px solid white;
+            border-right: 0.5px solid white;
+        }
+        .smalltext {
+            font-size: 15px !important;
+            padding: 0;
+        }
+        .help {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background-color: #000000c4;
+            color: white;
+            font-size: 30px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            padding: 20px;
+            cursor: pointer;
+        }
+        .messagesdiv {
+            height: 65px;
+            width: 200px;
+            overflow-y: scroll;
+            overflow-x: hidden;
+            padding: 0 10px 0 10px;
+            border: none !important;
+        }
+        .messagesdiv p {
+            font-size: 15px !important;
+            padding: 0;
+            text-align: left;
+            width: 180px;
+            max-width: 180px;
+            margin-top: 2.5px;
+            margin-bottom: 2.5px;
+        }
+        .secondslider {
+            margin-left: 100px;
+        }
+        .secondsliderlabels {
+            width: 23.07vh;
+            margin-top: calc(23.07vh / 2 - 50px);
+            margin-left: calc(-11.53vh + 50px);
+        }
+
+		.rotatediv {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			-webkit-backdrop-filter: blur(5px);
+			background: #000000c4;
+			z-index: visible;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			display: none;
+		}
+
+		.rotatediv img {
+			max-width: 170px;
+			width: 50vw;
+		}
+
+		.rotatediv h1 {
+			color: white;
+			font-size: 20px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+
+		@media screen and (orientation: portrait) {
+			.rotatediv {
+				display: flex;
+			}
+		}
+
+		@media screen and (max-width: 1000px) {
+			.sliderlabels p {
+            	font-size: 20px;
+        	}
+			.speedocontainer p {
+				font-size: 20px;
+				padding: 5px 10px 5px 10px;
+			}
+			.smalltext {
+				font-size: 12px !important;
+			}
+			.help {
+				font-size: 20px;
+				padding: 20px;
+			}
+			.messagesdiv p {
+            	width: 90px;
+				font-size: 12px !important;
+				padding: 0 5px 0 5px;
+			}
+			.messagesdiv {
+				width: 100px;
+				height: 40px;
+			}
+		}
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="1200" height="1000"></canvas>
+    <div class="buttonsmaincontainer">
+        <div class="slidercontainer">
+            <input onchange="powerChange()" id="power" type="range" min="1" max="13" value="2" class="slider">
+            <div class="sliderlabels">
+                <p>P4</p>
+                <p>P3</p>
+                <p>P2</p>
+                <p>P1</p>
+                <p>N</p>
+                <p>B1</p>
+                <p>B2</p>
+                <p>B3</p>
+                <p>B4</p>
+                <p>B5</p>
+                <p>B6</p>
+                <p>B7</p>
+                <p>EB</p>
+            </div>
+        </div>
+        <div class="slidercontainer secondslider">
+            <input onchange="directionChange()" id="direction" type="range" min="1" max="3" value="3" class="slider secondsliderlabels">
+            <div class="sliderlabels">
+                <p>F</p>
+                <p>N</p>
+                <p>B</p>
+            </div>
+        </div>
+        <div class="speedocontainer">
+            <div>
+                <p id="speedo">--</p>
+                <p class="smalltext">Speed</p>
+            </div>
+            <div>
+                <p onmousedown="atoKeyPressed()" ontouchdown="atoKeyPressed()" id="mode">--</p>
+                <p class="smalltext">Mode</p>
+            </div>
+            <div>
+                <p id="traveled">--</p>
+                <p class="smalltext">Traveled Distance</p>
+            </div>
+            <div>
+                <p onmousedown="leftDoorsKeyPressed()" ontouchdown="leftDoorsKeyPressed()" id="leftdoors">--</p>
+                <p class="smalltext">Left Doors</p>
+            </div>
+            <div>
+                <p onmousedown="rightDoorsKeyPressed()" ontouchdown="rightDoorsKeyPressed()" id="rightdoors">--</p>
+                <p class="smalltext">Right Doors</p>
+            </div>
+            <div>
+                <div class="messagesdiv" id="messagesdiv">
+                </div>
+                <p class="smalltext">Messages</p>
+            </div>
+        </div>
+        <a class="help" onclick="help()">?</a>
+    </div>
+	<div class="rotatediv">
+		<img src="rotate.svg" alt="">
+		<h1>Please rotate your device</h1>
+	</div>
+</body>
+</html>
